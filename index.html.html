@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ramean — Belanja Hemat Tanpa Ribet</title>
+  <meta name="theme-color" content="#16a34a"/>
+  <style>
+    :root{
+      --bg:#f8fafc;--card:#ffffff;--ink:#0f172a;--muted:#64748b;--line:#e5e7eb;--brand:#16a34a;--brand-2:#059669;--chip:#eef2ff;--chip-ink:#3730a3
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 Inter,system-ui,Segoe UI,Roboto,Arial}
+    a{color:inherit}
+    .wrap{max-width:1000px;margin:0 auto;padding:16px}
+    header{position:sticky;top:0;background:linear-gradient(180deg,#ffffffcc,#ffffffdd 70%,#fff0);backdrop-filter:saturate(120%) blur(4px);z-index:5;border-bottom:1px solid var(--line)}
+    .head-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:1000px;margin:0 auto;padding:12px 16px}
+    .brand{display:flex;gap:10px;align-items:center}
+    .logo{width:28px;height:28px;border-radius:8px;background:conic-gradient(from 230deg at 50% 50%,#16a34a,#22c55e,#064e3b);box-shadow:0 1px 0 #0001 inset}
+    h1{font-size:18px;margin:0}
+    .muted{color:var(--muted)}
+
+    .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+
+    .card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,.04);padding:14px}
+    .section-title{font-weight:600;margin:0 0 8px}
+
+    label small{color:var(--muted)}
+    input[type=number],input[type=range],select{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .col{flex:1 1 240px}
+
+    .chips{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:var(--chip);color:var(--chip-ink);border:1px solid #c7d2fe}
+    .chip input{accent-color:#4f46e5}
+
+    .btn{appearance:none;border:0;border-radius:12px;padding:10px 14px;background:var(--brand);color:#fff;font-weight:600;cursor:pointer}
+    .btn.secondary{background:#111}
+    .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+
+    .stack{display:flex;gap:8px;flex-wrap:wrap}
+
+    .bar{height:12px;border-radius:999px;background:#e5f7ec;overflow:hidden;border:1px solid #cfe9d7}
+    .bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand-2));width:0}
+
+    .tabs{display:flex;gap:8px;border-bottom:1px solid var(--line);margin:8px 0}
+    .tab{padding:8px 10px;border-radius:10px 10px 0 0;border:1px solid transparent;border-bottom:0;cursor:pointer}
+    .tab[aria-selected="true"]{border-color:var(--line);background:#fff}
+
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left}
+    th.sortable{cursor:pointer}
+    .qty{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+    .qty button{border:0;background:#f1f5f9;padding:6px 10px;cursor:pointer}
+    .qty input{width:48px;text-align:center;border:0}
+
+    .foot{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+
+    .toast{position:fixed;left:50%;bottom:16px;transform:translateX(-50%) translateY(20px);opacity:0;background:#111;color:#fff;padding:10px 12px;border-radius:10px;transition:.25s;z-index:50}
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+    .mini{font-size:12px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="head-inner">
+      <div class="brand"><div class="logo" aria-hidden="true"></div><div>
+        <h1>Ramean</h1>
+        <div class="muted mini">Belanja bareng • hemat waktu & biaya</div>
+      </div></div>
+      <div class="stack">
+        <button id="btnShare" class="btn ghost" title="Buat link dengan preferensi kamu">Bagikan</button>
+        <button id="btnReset" class="btn ghost" title="Reset ke default">Reset</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="grid">
+      <!-- LEFT: Config -->
+      <section class="card" aria-labelledby="cfg">
+        <h2 id="cfg" class="section-title">Preferensi kamu</h2>
+        <div class="row">
+          <div class="col">
+            <label>Budget bulanan (Rp)
+              <input id="budget" type="number" min="50000" step="5000" value="300000" />
+            </label>
+            <div class="bar" aria-hidden="true" style="margin-top:8px"><i id="fillBar"></i></div>
+            <div class="mini muted" id="fillHint">0% terpakai</div>
+          </div>
+          <div class="col">
+            <label>Lokasi & Jadwal kirim
+              <select id="lokasi"></select>
+            </label>
+            <div class="mini muted" id="jadwalHint">—</div>
+          </div>
+        </div>
+
+        <div style="margin-top:10px">
+          <div class="muted mini" style="margin-bottom:6px">Pilih kategori prioritas (centang)</div>
+          <div id="katChips" class="chips"></div>
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <div class="col">
+            <label>Mode rekomendasi <small>(algoritma)</small>
+              <select id="mode">
+                <option value="basic">Basic Hemat (isi stabil)</option>
+                <option value="smart" selected>Bulanan Cerdas (diversifikasi)</option>
+                <option value="premium">Premium Smart (tambah prioritas tinggi)</option>
+              </select>
+            </label>
+          </div>
+          <div class="col">
+            <label>Target pemakaian budget
+              <input id="targetFill" type="range" min="80" max="115" value="95"/>
+            </label>
+            <div class="mini muted">Isi keranjang hingga <span id="targetFillLbl">95%</span> dari budget (boleh melebihi untuk paket Premium)</div>
+          </div>
+        </div>
+
+        <div class="stack" style="margin-top:12px">
+          <button class="btn" id="btnRekomendasi">Lihat Rekomendasi</button>
+          <button class="btn secondary" id="btnWhatsApp">Pesan via WhatsApp</button>
+          <button class="btn ghost" id="btnCSV">Export CSV</button>
+        </div>
+
+        <div class="mini muted" style="margin-top:6px">Tips: semua pengaturan tersimpan otomatis di perangkat ini.</div>
+      </section>
+
+      <!-- RIGHT: Packages / Result -->
+      <section class="card" aria-labelledby="hasilTitle">
+        <h2 id="hasilTitle" class="section-title">Rekomendasi Paket</h2>
+        <div class="tabs" role="tablist">
+          <button class="tab" role="tab" aria-selected="true" data-tab="paket">Paket</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="produk">Semua Produk</button>
+        </div>
+        <div id="panelPaket" role="tabpanel"></div>
+        <div id="panelProduk" role="tabpanel" hidden></div>
+      </section>
+    </div>
+
+    <footer class="muted mini" style="margin:16px 4px 32px">Demo single‑file • Siap dihubungkan ke Supabase untuk auth, katalog, & order join.</footer>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+/*********************** CONFIG & DATA ************************/ 
+const PHONE = '6285161112704'; // TODO: ganti nomor bisnis
+const MARKET_MARKUP = 1.12; // pembanding “harga pasar”
+const LOKASI = [
+  {val:'Apt Melati', info:'Rabu & Sabtu • lobby tower A'},
+  {val:'Apt Mawar', info:'Selasa & Jumat • pos satpam'},
+  {val:'Kosan Cendana', info:'Kamis • parkiran depan'}
+];
+const CATEGORIES = [
+  {id:'beras', label:'Beras'},
+  {id:'minyak', label:'Minyak'},
+  {id:'telur', label:'Telur'},
+  {id:'mie', label:'Mie Instan'},
+  {id:'gula', label:'Gula'},
+  {id:'sabun', label:'Sabun'}
+];
+
+let PRODUCTS = [];
+// Coba fetch eksternal jika ada; jika gagal, pakai seed
+fetch('products.json').then(r=>r.ok?r.json():Promise.reject()).then(d=>{PRODUCTS=d;init();}).catch(()=>{
+  PRODUCTS = [
+    {id:'beras5', name:'Beras 5kg', category:'beras', unit:'sak', store:'Sembako Bu Tini', base_price:78000, priority:10},
+    {id:'minyak1', name:'Minyak 1L', category:'minyak', unit:'botol', store:'Sembako Pak Ronald', base_price:15500, priority:9},
+    {id:'telur1', name:'Telur 1kg', category:'telur', unit:'kg', store:'Grosir Indah', base_price:29000, priority:9},
+    {id:'mie5', name:'Mie instan 5pcs', category:'mie', unit:'pack', store:'Grosir Indah', base_price:14500, priority:6},
+    {id:'gula1', name:'Gula 1kg', category:'gula', unit:'kg', store:'Sembako Bu Tini', base_price:17000, priority:7},
+    {id:'sabun3', name:'Sabun batang 3pcs', category:'sabun', unit:'pack', store:'Sembako Bu Tini', base_price:12000, priority:5}
+  ];
+  init();
+});
+
+/*********************** STATE ************************/ 
+const state = {
+  budget: 300000,
+  lokasi: LOKASI[0].val,
+  enabled: Object.fromEntries(CATEGORIES.map(c=>[c.id, true])),
+  mode: 'smart',
+  targetFill: 95,
+  basket: null,
+};
+
+function saveState(){ localStorage.setItem('ramean2', JSON.stringify(state)); }
+function loadState(){ try{ Object.assign(state, JSON.parse(localStorage.getItem('ramean2'))||{});}catch{} }
+
+/*********************** INIT UI ************************/ 
+function el(html){ const t=document.createElement('template'); t.innerHTML=html.trim(); return t.content.firstElementChild }
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800) }
+
+function init(){
+  loadState();
+  // Lokasi
+  const selLok = document.getElementById('lokasi');
+  LOKASI.forEach(l=> selLok.appendChild(el(`<option value="${l.val}">${l.val}</option>`)) );
+  selLok.value = state.lokasi; updateJadwal();
+  selLok.addEventListener('change', e=>{ state.lokasi=e.target.value; updateJadwal(); saveState(); })
+
+  // Budget & target fill
+  const budget = document.getElementById('budget');
+  budget.value = state.budget; budget.addEventListener('input', e=>{ state.budget=Number(e.target.value||0); updateFill(); saveState(); })
+  const tfill = document.getElementById('targetFill');
+  tfill.value = state.targetFill; tfill.addEventListener('input', e=>{ state.targetFill=Number(e.target.value); document.getElementById('targetFillLbl').textContent=state.targetFill+'%'; saveState(); })
+  document.getElementById('targetFillLbl').textContent=state.targetFill+'%';
+
+  // Chips kategori (checkbox saja, tanpa slider/"meteran")
+  const chips = document.getElementById('katChips'); chips.innerHTML='';
+  CATEGORIES.forEach(c=>{
+    const checked = state.enabled[c.id];
+    const node = el(`<label class="chip">
+      <input type="checkbox" ${checked? 'checked':''} data-id="${c.id}" /> ${c.label}
+    </label>`);
+    node.querySelector('input[type=checkbox]').addEventListener('change',e=>{ state.enabled[c.id]=e.target.checked; saveState(); })
+    chips.appendChild(node);
+  })
+
+  // Mode
+  const mode = document.getElementById('mode'); mode.value = state.mode; mode.addEventListener('change', e=>{ state.mode=e.target.value; saveState(); })
+
+  // Buttons
+  document.getElementById('btnRekomendasi').addEventListener('click', recommend)
+  document.getElementById('btnWhatsApp').addEventListener('click', sendWhatsApp)
+  document.getElementById('btnCSV').addEventListener('click', downloadCSV)
+  document.getElementById('btnShare').addEventListener('click', shareLink)
+  document.getElementById('btnReset').addEventListener('click', ()=>{ localStorage.removeItem('ramean2'); location.reload() })
+
+  // Tabs
+  const tabs=[...document.querySelectorAll('.tab')];
+  tabs.forEach(t=> t.addEventListener('click',()=>{
+    tabs.forEach(x=>x.setAttribute('aria-selected','false'));
+    t.setAttribute('aria-selected','true');
+    const name=t.dataset.tab; document.getElementById('panelPaket').hidden = name!=='paket'; document.getElementById('panelProduk').hidden = name!=='produk';
+  }))
+
+  // Products table (all)
+  renderProductTable(PRODUCTS);
+
+  // Query params load
+  applyParams();
+
+  // First compute
+  recommend();
+}
+
+function updateJadwal(){
+  const l = LOKASI.find(x=>x.val===state.lokasi); document.getElementById('jadwalHint').textContent = l? l.info : '—';
+}
+
+/*********************** ALGO ************************/ 
+function recommend(){
+  const chosenCats = CATEGORIES.filter(c=>state.enabled[c.id]).map(c=>c.id);
+  const list = PRODUCTS.filter(p=> chosenCats.includes(p.category));
+  // Score: berdasarkan prioritas & value density (tanpa slider/"meteran" per kategori)
+  const items = list.map(p=> ({
+    ...p,
+    score: ((p.priority||5)) / p.base_price
+  }))
+  items.sort((a,b)=> b.score - a.score || a.base_price - b.base_price);
+
+  const budget = Number(state.budget||0);
+  const ratio = (state.mode==='premium')? Math.min(1.15, state.targetFill/100): state.targetFill/100; // allow up to 115% for premium
+  const target = Math.floor(budget * ratio);
+
+  const picked = {};
+  let total=0;
+  for(const p of items){
+    if(total + p.base_price <= target){ picked[p.id] = (picked[p.id]||0)+1; total += p.base_price; }
+  }
+
+  // diversifikasi minimal untuk mode smart
+  if(state.mode==='smart'){
+    const hasCat = (cat)=> Object.entries(picked).some(([id,q])=> q>0 && PRODUCTS.find(r=>r.id===id)?.category===cat);
+    for(const cat of chosenCats){
+      if(!hasCat(cat)){
+        const candidate = items.find(x=>x.category===cat && x.base_price <= (budget - total));
+        if(candidate){ picked[candidate.id]=(picked[candidate.id]||0)+1; total+=candidate.base_price; }
+      }
+    }
+  }
+
+  const pkg = { name: modeName(state.mode), items:picked, total };
+  state.basket = pkg; saveState();
+  renderPackages([pkg], budget, state.lokasi);
+  updateFill();
+}
+
+function modeName(m){ return m==='basic'? 'Basic Hemat' : m==='smart'? 'Bulanan Cerdas' : 'Premium Smart'; }
+
+/*********************** RENDER ************************/ 
+function fmt(n){ return (n||0).toLocaleString('id-ID'); }
+function find(id){ return PRODUCTS.find(p=>p.id===id); }
+
+function renderPackages(packages, budget, lokasi){
+  const panel = document.getElementById('panelPaket');
+  panel.innerHTML = packages.map(pkg=>{
+    const rows = Object.entries(pkg.items).map(([pid,qty])=>{
+      const p=find(pid); const sub = p.base_price*qty;
+      return `<tr>
+        <td>${p.name}<div class="mini muted">${p.store} • ${p.category}</div></td>
+        <td>${qty} ${p.unit||''}</td>
+        <td>Rp${fmt(p.base_price)}</td>
+        <td>Rp${fmt(sub)}</td>
+        <td>
+          <div class="qty" data-id="${p.id}">
+            <button aria-label="kurangi">−</button>
+            <input value="${qty}" inputmode="numeric" />
+            <button aria-label="tambah">＋</button>
+          </div>
+        </td>
+      </tr>`
+    }).join('') || `<tr><td colspan="5" class="muted">Budget terlalu kecil untuk kategori terpilih.</td></tr>`;
+
+    const market = Math.round(pkg.total*MARKET_MARKUP);
+    const hemat = Math.max(0, market - pkg.total);
+    const hematPct = market? Math.round(hemat/market*100) : 0;
+
+    return `<div class="card" style="padding:12px">
+      <h3 style="margin:6px 0">${pkg.name}</h3>
+      <div class="muted mini" style="margin-bottom:8px">Lokasi ${lokasi} • Pengiriman gabungan sesuai jadwal</div>
+      <div style="overflow:auto">
+        <table>
+          <thead><tr>
+            <th>Item</th><th>Qty</th><th>Harga</th><th>Subtotal</th><th>Aksi</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      <div class="foot">
+        <div>
+          <div><strong>Total: Rp${fmt(pkg.total)}</strong></div>
+          <div class="mini muted">Banding pasar: Rp${fmt(market)} • Hemat: Rp${fmt(hemat)} (${hematPct}%)</div>
+        </div>
+        <div class="stack">
+          <button class="btn" data-wa>Pesan via WhatsApp</button>
+          <button class="btn ghost" data-copy>Salin ringkasan</button>
+        </div>
+      </div>
+    </div>`
+  }).join('');
+
+  // Bind qty steppers
+  panel.querySelectorAll('.qty').forEach(q=>{
+    const id=q.dataset.id; const input=q.querySelector('input');
+    q.querySelectorAll('button')[0].addEventListener('click',()=>{ setQty(id, Math.max(0, (Number(input.value)||0)-1)) })
+    q.querySelectorAll('button')[1].addEventListener('click',()=>{ setQty(id, (Number(input.value)||0)+1) })
+    input.addEventListener('change',()=>{ const v=Math.max(0, Number(input.value)||0); setQty(id,v) })
+  })
+
+  // Bind WA & copy buttons within card
+  panel.querySelectorAll('[data-wa]').forEach(b=> b.addEventListener('click', sendWhatsApp))
+  panel.querySelectorAll('[data-copy]').forEach(b=> b.addEventListener('click', ()=>{ navigator.clipboard.writeText(buildSummary()).then(()=>toast('Ringkasan tersalin')) }))
+}
+
+function renderProductTable(products){
+  const panel = document.getElementById('panelProduk');
+  const head = `<thead><tr>
+    <th class="sortable" data-k="name">Produk</th>
+    <th class="sortable" data-k="category">Kategori</th>
+    <th class="sortable" data-k="store">Toko</th>
+    <th class="sortable" data-k="base_price">Harga</th>
+    <th>Tambah</th>
+  </tr></thead>`;
+
+  let rows = products.map(p=> `<tr>
+    <td>${p.name}</td>
+    <td>${p.category}</td>
+    <td>${p.store}</td>
+    <td>Rp${fmt(p.base_price)}</td>
+    <td><button class="btn ghost mini" data-add="${p.id}">＋</button></td>
+  </tr>`).join('');
+
+  panel.innerHTML = `<div style="overflow:auto"><table>${head}<tbody>${rows}</tbody></table></div>`;
+  // sort handlers
+  const tbody=panel.querySelector('tbody');
+  panel.querySelectorAll('th.sortable').forEach(th=> th.addEventListener('click',()=>{
+    const k=th.dataset.k; const sorted=[...products].sort((a,b)=> (a[k]>b[k])?1:(a[k]<b[k])?-1:0); products.splice(0,products.length,...sorted); // mutate order
+    tbody.innerHTML = products.map(p=> `<tr>
+      <td>${p.name}</td><td>${p.category}</td><td>${p.store}</td><td>Rp${fmt(p.base_price)}</td>
+      <td><button class="btn ghost mini" data-add="${p.id}">＋</button></td>
+    </tr>`).join('');
+    bindAdders();
+  }))
+  bindAdders();
+  function bindAdders(){ panel.querySelectorAll('[data-add]').forEach(b=> b.addEventListener('click',()=>{ setQty(b.dataset.add, (state.basket?.items?.[b.dataset.add]||0)+1) })) }
+}
+
+function setQty(id, qty){
+  if(!state.basket){ return }
+  if(qty<=0){ delete state.basket.items[id] } else { state.basket.items[id]=qty }
+  // recompute total
+  state.basket.total = Object.entries(state.basket.items).reduce((sum,[pid,q])=> sum + (find(pid)?.base_price||0)*q, 0)
+  saveState();
+  renderPackages([state.basket], state.budget, state.lokasi);
+  updateFill();
+}
+
+function updateFill(){
+  const used = Math.min(1, (state?.basket?.total||0) / Math.max(1,state.budget));
+  const bar = document.getElementById('fillBar'); bar.style.width = (used*100)+'%';
+  document.getElementById('fillHint').textContent = `${Math.round(used*100)}% dari budget terpakai`;
+}
+
+/*********************** WHATSAPP & EXPORT ************************/ 
+function buildSummary(){
+  const pkg = state.basket || {items:{}, total:0};
+  const rows = Object.entries(pkg.items).map(([pid,qty])=>{ const p=find(pid); return `- ${p.name} x${qty} @Rp${fmt(p.base_price)}` }).join('\n');
+  const market = Math.round(pkg.total*MARKET_MARKUP);
+  const hemat = Math.max(0, market - pkg.total);
+  const hematPct = market? Math.round(hemat/market*100) : 0;
+  const l=LOKASI.find(x=>x.val===state.lokasi);
+  return `[Ramean Order]\nLokasi: ${state.lokasi} (${l?.info||''})\nBudget: Rp${fmt(state.budget)}\nTotal: Rp${fmt(pkg.total)}\nPerkiraan Hemat: Rp${fmt(hemat)} (${hematPct}%)\n\nItem:\n${rows}\n\nNama:\nNomor:\nAlamat:\nCatatan Waktu Kirim:`;
+}
+
+function sendWhatsApp(){
+  const text = encodeURIComponent(buildSummary());
+  const url = `https://wa.me/${PHONE}?text=${text}`;
+  window.open(url,'_blank','noopener');
+}
+
+function downloadCSV(){
+  const pkg = state.basket || {items:{}}; const lines=[['id','name','qty','unit','price','subtotal'].join(',')];
+  for(const [pid,qty] of Object.entries(pkg.items)){
+    const p=find(pid); const sub=p.base_price*qty; lines.push([pid,`"${p.name}"`,qty,p.unit||'',p.base_price,sub].join(','));
+  }
+  const blob=new Blob([lines.join('\n')],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='ramean-order.csv'; a.click();
+}
+
+/*********************** SHAREABLE LINK ************************/ 
+function shareLink(){
+  const params = new URLSearchParams();
+  params.set('b', state.budget);
+  params.set('l', state.lokasi);
+  params.set('m', state.mode);
+  params.set('t', state.targetFill);
+  params.set('en', Object.entries(state.enabled).filter(([,v])=>v).map(([k])=>k).join('.'));
+  const url = location.origin + location.pathname + '?' + params.toString();
+  navigator.clipboard.writeText(url).then(()=> toast('Link preferensi tersalin')); 
+}
+
+function applyParams(){
+  const q= new URLSearchParams(location.search);
+  if(!q.size) return;
+  state.budget = Number(q.get('b')||state.budget);
+  state.lokasi = q.get('l') || state.lokasi;
+  state.mode = q.get('m') || state.mode;
+  state.targetFill = Number(q.get('t')||state.targetFill);
+  const en = (q.get('en')||'').split('.').filter(Boolean);
+  if(en.length){ for(const k in state.enabled){ state.enabled[k]=en.includes(k) } }
+  saveState();
+}
+</script>
+</body>
+</html>
