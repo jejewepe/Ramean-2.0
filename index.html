@@ -67,6 +67,10 @@
     .sticky{position:sticky;bottom:0;background:linear-gradient(180deg,#ffffffee,#ffffff);border:1px solid var(--line);
       border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px}
     .strike{text-decoration:line-through;color:var(--muted)}
+      
+    /* di <style> tambah: */
+    .card .foot { justify-content: flex-start; gap: 16px; }
+
   </style>
 </head>
 <body>
@@ -388,17 +392,18 @@ function renderPackages(packages, budget, lokasi){
         </table>
       </div>
 
+      
       <div class="foot">
         <div>
           <div><span class="strike">Total sebelum diskon: Rp${fmt(pkg.total)}</span></div>
           <div>Diskon Pool (${curPct}%): <b>− Rp${fmt(diskonPool)}</b></div>
           <div style="margin-top:4px"><strong>Total Bayar: Rp${fmt(totalBayar)}</strong></div>
-          <div class="mini muted" style="margin-top:6px">Banding pasar: Rp${fmt(market)} • Hemat vs pasar: Rp${fmt(hematVsMarket)} (~${hematPctApprox}%)</div>
-        </div>
-        <div class="stack">
-          <button class="btn" data-wa>Pesan via WhatsApp</button>
+          <div class="mini muted" style="margin-top:6px">
+            Banding pasar: Rp${fmt(market)} • Hemat vs pasar: Rp${fmt(hematVsMarket)} (~${hematPctApprox}%)
+          </div>
         </div>
       </div>
+
     </div>`
   }).join('');
 
@@ -410,7 +415,7 @@ function renderPackages(packages, budget, lokasi){
     input.addEventListener('change',()=>{ const v=Math.max(0, Number(input.value)||0); setQty(id,v) })
   })
   // WA in card
-  panel.querySelectorAll('[data-wa]').forEach(b=> b.addEventListener('click', sendWhatsApp))
+  //panel.querySelectorAll('[data-wa]').forEach(b=> b.addEventListener('click', sendWhatsApp))
 
   // update sticky
   updateSticky();
