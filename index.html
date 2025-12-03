@@ -3,530 +3,684 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ramean — Belanja Hemat Tanpa Ribet</title>
+  <title>Budgee — Belanja Sembako Cerdas Tanpa Ribet</title>
   <meta name="theme-color" content="#16a34a"/>
+
   <style>
     :root{
       --bg:#f7fafc;--card:#ffffff;--ink:#0b1221;--muted:#6b7280;--line:#e5e7eb;
       --brand:#16a34a;--brand-2:#059669;--soft:#f1f5f9
     }
-    *{box-sizing:border-box} html,body{height:100%}
-    body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 Inter,system-ui,Segoe UI,Roboto,Arial}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;background:var(--bg);color:var(--ink);
+      font:14px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial
+    }
 
-    /* Header */
-    header{position:sticky;top:0;z-index:5;border-bottom:1px solid var(--line);
-      background:linear-gradient(180deg,#ffffffdd,#ffffffee 65%,#fff0)}
-    .head-inner{max-width:1000px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:14px 16px}
-    .logo{width:28px;height:28px;border-radius:8px;background:conic-gradient(from 230deg,#16a34a,#22c55e,#064e3b)}
-    h1{font-size:18px;margin:0} .muted{color:var(--muted)} .mini{font-size:12px}
+    /* HEADER */
+    header{
+      position:sticky;top:0;z-index:5;border-bottom:1px solid var(--line);
+      background:linear-gradient(180deg,#ffffffdd,#ffffffee 65%,#fff0)
+    }
+    .head-inner{
+      max-width:1000px;margin:0 auto;display:flex;align-items:center;
+      gap:12px;padding:14px 16px
+    }
+    .logo{
+      width:28px;height:28px;border-radius:8px;
+      background:conic-gradient(from 230deg,#16a34a,#22c55e,#064e3b)
+    }
+    h1{font-size:18px;margin:0}
+    .muted{color:var(--muted)} .mini{font-size:12px}
 
-    /* Layout */
+    /* LAYOUT */
     .wrap{max-width:1000px;margin:0 auto;padding:14px}
     .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:16px}
-    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
 
-    /* Card & Buttons */
-    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;
-      box-shadow:0 6px 20px rgba(2,8,20,.04);padding:14px}
+    /* CARD */
+    .card{
+      background:var(--card);border:1px solid var(--line);border-radius:16px;
+      box-shadow:0 6px 20px rgba(2,8,20,.04);padding:14px
+    }
     .section-title{font-weight:700;margin:0 0 8px}
-    .btn{appearance:none;border:0;border-radius:12px;padding:10px 14px;background:var(--brand);
-      color:#fff;font-weight:700;cursor:pointer;transition:.2s}
+
+    /* BUTTONS */
+    .btn{
+      appearance:none;border:0;border-radius:12px;padding:10px 14px;
+      background:var(--brand);color:#fff;font-weight:700;cursor:pointer;transition:.16s
+    }
     .btn:hover{transform:translateY(-1px)} .btn:active{transform:translateY(0)}
-    .btn.secondary{background:#111} .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+    .btn.secondary{background:#111}
+
     .stack{display:flex;gap:8px;flex-wrap:wrap}
 
-    /* Form */
-    input[type=number],input[type=range],select{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff}
-    label small{color:var(--muted)} .row{display:flex;gap:12px;flex-wrap:wrap} .col{flex:1 1 240px}
+    /* INPUTS */
+    input[type=number],select{
+      width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff
+    }
+    input[type=range]{width:100%;accent-color:var(--brand)}
 
-    /* Chips */
-    .chips{display:flex;gap:8px;flex-wrap:wrap}
-    .chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:#eef2ff;
-      color:#3730a3;border:1px solid #c7d2fe}
+    /* CHIPS */
+    .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+    .chip{
+      display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;
+      background:#eef2ff;color:#3730a3;border:1px solid #c7d2fe;font-size:13px
+    }
     .chip input{accent-color:#4f46e5}
 
-    /* Bars & table */
+    /* BAR */
     .bar{height:12px;border-radius:999px;background:#e5f7ec;overflow:hidden;border:1px solid #cfe9d7}
     .bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand-2));width:0}
-    table{width:100%;border-collapse:collapse} th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left}
 
-    /* Qty */
-    .qty{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:10px;overflow:hidden}
-    .qty button{border:0;background:var(--soft);padding:6px 10px;cursor:pointer}
-    .qty input{width:56px;text-align:center;border:0}
+    /* TABLE */
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left}
 
-    /* Pool */
-    .pool{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-    .badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#dcfce7;color:#14532d;border:1px solid #bbf7d0;font-weight:700}
+    /* QTY */
+    .qty{
+      display:inline-flex;align-items:center;border:1px solid var(--line);
+      border-radius:10px;overflow:hidden
+    }
+    .qty button{border:0;background:var(--soft);padding:5px 10px;cursor:pointer}
+    .qty input{width:54px;text-align:center;border:0;padding:4px 0}
 
-    /* Toast */
-    .toast{position:fixed;left:50%;bottom:16px;transform:translateX(-50%) translateY(20px);opacity:0;background:#111;color:#fff;padding:10px 12px;border-radius:10px;transition:.25s;z-index:50}
-    .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
-
-    /* Sticky summary */
-    .sticky{position:sticky;bottom:0;background:linear-gradient(180deg,#ffffffee,#ffffff);border:1px solid var(--line);
-      border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px}
+    /* STICKY SUMMARY */
+    .sticky{
+      position:sticky;bottom:0;background:linear-gradient(180deg,#ffffffee,#ffffff);
+      border:1px solid var(--line);border-radius:12px;padding:10px;
+      display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px
+    }
     .strike{text-decoration:line-through;color:var(--muted)}
-      
-    /* di <style> tambah: */
-    .card .foot { justify-content: flex-start; gap: 16px; }
 
+    /* TOAST */
+    .toast{
+      position:fixed;left:50%;bottom:16px;transform:translateX(-50%) translateY(20px);
+      opacity:0;background:#111;color:#fff;padding:10px 12px;border-radius:10px;
+      transition:.25s;z-index:50;font-size:13px
+    }
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
   </style>
 </head>
+
 <body>
-  <header>
-    <div class="head-inner">
-      <div class="logo" aria-hidden="true"></div>
-      <div>
-        <h1>Ramean</h1>
-        <div class="muted mini">Belanja bareng • hemat waktu & biaya</div>
-      </div>
+
+<header>
+  <div class="head-inner">
+    <div class="logo"></div>
+    <div>
+      <h1>Budgee</h1>
+      <div class="muted mini">Belanja cerdas • hemat harga • tanpa ribet</div>
     </div>
-  </header>
-
-  <div class="wrap">
-    <div class="grid">
-      <!-- LEFT: Config -->
-      <section class="card" aria-labelledby="cfg">
-        <h2 id="cfg" class="section-title">Preferensi kamu</h2>
-        <div class="row">
-          <div class="col">
-            <label>Budget bulanan (Rp)
-              <input id="budget" type="number" min="50000" step="5000" value="300000" />
-            </label>
-            <div class="bar" aria-hidden="true" style="margin-top:8px"><i id="fillBar"></i></div>
-            <div class="mini muted" id="fillHint">0% terpakai</div>
-          </div>
-          <div class="col">
-            <label>Lokasi & Jadwal kirim
-              <select id="lokasi"></select>
-            </label>
-            <div class="mini muted" id="jadwalHint">—</div>
-          </div>
-        </div>
-
-        <div style="margin-top:10px">
-          <div class="muted mini" style="margin-bottom:6px">Pilih kategori (centang)</div>
-          <div id="katChips" class="chips"></div>
-        </div>
-
-        <div class="row" style="margin-top:10px">
-          <div class="col">
-            <label>Mode rekomendasi <small>(algoritma)</small>
-              <select id="mode">
-                <option value="basic">Basic Hemat (essentials)</option>
-                <option value="smart" selected>Bulanan Cerdas (well-balanced)</option>
-                <option value="premium">Premium Smart (quality-focus)</option>
-              </select>
-            </label>
-          </div>
-          <div class="col">
-            <label>Target pemakaian budget
-              <input id="targetFill" type="range" min="80" max="115" value="95"/>
-            </label>
-            <div class="mini muted">Isi keranjang hingga <span id="targetFillLbl">95%</span> dari budget (berlaku untuk semua mode)</div>
-          </div>
-        </div>
-
-        <div class="stack" style="margin-top:12px">
-          <button class="btn" id="btnRekomendasi">Buat Paket</button>
-          <button class="btn secondary" id="btnWhatsApp">Pesan via WhatsApp</button>
-        </div>
-      </section>
-
-      <!-- RIGHT: Result -->
-      <section class="card" aria-labelledby="hasilTitle">
-        <h2 id="hasilTitle" class="section-title">Rekomendasi Paket</h2>
-
-        <!-- Pool (ringkas) -->
-        <div id="poolBanner" class="card" style="margin:-6px 0 8px; padding:12px"></div>
-
-        <div id="panelPaket" role="tabpanel"></div>
-
-        <!-- Sticky summary -->
-        <div id="stickyBar" class="sticky" hidden>
-          <div>
-            <div class="mini muted">Total Bayar</div>
-            <div id="stickyTotal" style="font-weight:800">Rp0</div>
-            <div class="mini muted" id="stickySave">Hemat ~Rp0</div>
-          </div>
-          <button class="btn" id="stickyWA">Pesan via WhatsApp</button>
-        </div>
-      </section>
-    </div>
-
-    <footer class="muted mini" style="margin:16px 4px 32px">Demo single-file • Siap dihubungkan ke Supabase.</footer>
   </div>
+</header>
 
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+<div class="wrap">
+  <div class="grid">
+
+    <!-- LEFT PANEL -->
+    <section class="card">
+      <h2 class="section-title">Atur preferensi belanja</h2>
+
+      <label class="mini" style="font-weight:600">
+        Budget bulanan (Rp)
+        <input id="budget" type="number" min="50000" step="5000" value="300000"/>
+      </label>
+
+      <div class="bar" style="margin-top:8px"><i id="fillBar"></i></div>
+      <div class="mini muted" id="fillHint">0% dari budget terpakai</div>
+
+      <label class="mini" style="margin-top:12px">
+        Lokasi & jadwal pengiriman
+        <select id="lokasi"></select>
+      </label>
+      <div id="jadwalHint" class="mini muted">—</div>
+
+      <div style="margin-top:14px">
+        <div class="mini muted">Pilih kategori kebutuhan</div>
+        <div id="katChips" class="chips"></div>
+      </div>
+
+      <label class="mini" style="margin-top:14px">
+        Target pemakaian budget
+        <input id="targetFill" type="range" min="60" max="110" value="95"/>
+      </label>
+      <div class="mini muted">
+        Sistem menargetkan sekitar <span id="targetFillLbl">95%</span> dari budget.
+      </div>
+
+      <div class="stack" style="margin-top:16px">
+        <button class="btn" id="btnSuggest">Buat Paket</button>
+        <button class="btn secondary" id="btnWhatsApp">Pesan via WhatsApp</button>
+      </div>
+
+      <div class="mini muted" style="margin-top:10px">
+        Kamu tetap bebas mengubah jumlah & produk. Budgee hanya membantu mencari harga terbaik.
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL -->
+    <section class="card">
+      <h2 class="section-title">Keranjang & rekomendasi harga</h2>
+      <div id="panelPaket"></div>
+
+      <div id="stickyBar" class="sticky" hidden>
+        <div>
+          <div class="mini muted">Total bayar</div>
+          <div id="stickyTotal" style="font-weight:800">Rp0</div>
+          <div class="mini muted" id="stickySave">Banding pasar: Rp0 • Hemat vs pasar: Rp0</div>
+          <div class="mini muted" id="stickyBudget">Sisa budget: Rp0</div>
+        </div>
+        <button class="btn" id="stickyWA">Pesan via WhatsApp</button>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
 
 <script>
-/*********************** CONFIG & DATA ************************/ 
+/* ===================== CONFIG & DATA ===================== */
+
 const PHONE = '6285161112704';
-const MARKET_MARKUP = 1.12;
+const MARKET_MARKUP = 1.12; // anggap minimarket 12% lebih mahal
+const POOL_MIN = 0;
+const POOL_MAX = 15;        // simulasi diskon pool 0–15%
+
 const LOKASI = [
-  {val:'Apt Melati', info:'Rabu & Sabtu • lobby tower A'},
-  {val:'Apt Mawar', info:'Selasa & Jumat • pos satpam'},
-  {val:'Kosan Cendana', info:'Kamis • parkiran depan'}
+  {val:'Apt Melati', info:'Rabu & Sabtu • 09.00–12.00 • Lobby Tower A'},
+  {val:'Apt Mawar',  info:'Selasa & Jumat • 09.00–12.00 • Pos Satpam'},
+  {val:'Kosan Cendana', info:'Kamis • 16.00–19.00 • Parkiran depan'}
 ];
 
-/* 6 sembako */
 const CATEGORIES = [
-  {id:'mie', label:'Mie Instan'},
+  {id:'mie',   label:'Mie instan'},
   {id:'beras', label:'Beras'},
   {id:'telur', label:'Telur'},
-  {id:'gula', label:'Gula'},
-  {id:'ayam', label:'Daging Ayam'},
-  {id:'sapi', label:'Daging Sapi'},
+  {id:'gula',  label:'Gula'},
+  {id:'ayam',  label:'Daging ayam'},
+  {id:'sapi',  label:'Daging sapi'}
 ];
 
-/* POOL TIERS */
+const PRODUCTS = [
+  // mie (pcs)
+  {id:'mie_a',   cat:'mie',   name:'Mie Instan - A', unit:'pcs', qtyUnit:1, store:'Grosir Indah', price:3200, quality:6},
+  {id:'mie_b',   cat:'mie',   name:'Mie Instan - B', unit:'pcs', qtyUnit:1, store:'Sembako Bu Tini', price:3000, quality:5},
 
-const DEFAULT_POOL = {
-  joined: 6,             // nilai awal simulasi
-  target: 40,            // target pool lebih realistis / ramai
-  tiers: [
-    { at:  5, extraPct:  2 },   // sebelumnya 1%
-    { at: 10, extraPct:  5 },   // sebelumnya 2%
-    { at: 15, extraPct:  8 },   // sebelumnya 3%
-    { at: 20, extraPct: 10 },
-    { at: 30, extraPct: 13 },
-    { at: 40, extraPct: 15 }    // cap 15%
-  ]
+  // beras (kg)
+  {id:'beras_a', cat:'beras', name:'Beras Medium 1kg', unit:'kg', qtyUnit:1, store:'Grosir Indah', price:17000, quality:6},
+  {id:'beras_b', cat:'beras', name:'Beras Premium 1kg', unit:'kg', qtyUnit:1, store:'Toko Beras Subur', price:19500, quality:8},
+
+  // telur (lusin)
+  {id:'telur_a', cat:'telur', name:'Telur Ayam 1 lusin', unit:'lusin', qtyUnit:1, store:'Grosir Indah', price:36000, quality:6},
+  {id:'telur_b', cat:'telur', name:'Telur Kampung 1 lusin', unit:'lusin', qtyUnit:1, store:'Peternak Sukses', price:54000, quality:8},
+
+  // gula (kg)
+  {id:'gula_a',  cat:'gula',  name:'Gula 1kg', unit:'kg', qtyUnit:1, store:'Sembako Bu Tini', price:17000, quality:6},
+  {id:'gula_b',  cat:'gula',  name:'Gula Premium 1kg', unit:'kg', qtyUnit:1, store:'Grosir Indah', price:18500, quality:7},
+
+  // ayam (kg)
+  {id:'ayam_a',  cat:'ayam',  name:'Daging Ayam 1kg', unit:'kg', qtyUnit:1, store:'Toko Daging Sehat', price:39000, quality:6},
+  {id:'ayam_b',  cat:'ayam',  name:'Daging Ayam Fillet 1kg', unit:'kg', qtyUnit:1, store:'RPH Prima', price:46000, quality:8},
+
+  // sapi (0.25kg)
+  {id:'sapi_a',  cat:'sapi',  name:'Daging Sapi 0.25kg', unit:'kg', qtyUnit:0.25, store:'Toko Daging Sehat', price:30000, quality:6},
+  {id:'sapi_b',  cat:'sapi',  name:'Daging Sapi Premium 0.25kg', unit:'kg', qtyUnit:0.25, store:'RPH Prima', price:36000, quality:8}
+];
+
+function fmt(n){return (n||0).toLocaleString('id-ID');}
+function findProduct(id){return PRODUCTS.find(p=>p.id===id);}
+
+/* ===================== BALANCED WEIGHTS ===================== */
+
+const WEIGHTS = {
+  mie:   0.9,
+  beras: 1.2,
+  telur: 1.0,
+  gula:  0.9,
+  ayam:  1.3,
+  sapi:  1.5
 };
 
+/* ===================== STATE ===================== */
 
-let PRODUCTS = [];
-fetch('products.json').then(r=>r.ok?r.json():Promise.reject()).then(d=>{PRODUCTS=d;init();}).catch(()=>{
-  PRODUCTS = [
-    // Mie (pcs)
-    {id:'mie_a_1', name:'Mie Instan - A', category:'mie', unit:'pcs', qty:1, norm:'pcs', norm_qty:1, store:'Grosir Indah', base_price:3200, priority:6, quality:6},
-    {id:'mie_b_1', name:'Mie Instan - B', category:'mie', unit:'pcs', qty:1, norm:'pcs', norm_qty:1, store:'Sembako Bu Tini', base_price:3000, priority:6, quality:5},
-    // Beras (kg)
-    {id:'beras_a_1', name:'Beras Medium 1kg', category:'beras', unit:'kg', qty:1, norm:'kg', norm_qty:1, store:'Grosir Indah', base_price:17000, priority:10, quality:6},
-    {id:'beras_b_1', name:'Beras Premium 1kg', category:'beras', unit:'kg', qty:1, norm:'kg', norm_qty:1, store:'Toko Beras Subur', base_price:19500, priority:10, quality:8},
-    // Telur (lusin)
-    {id:'telur_a_lzn', name:'Telur Ayam 1 lusin', category:'telur', unit:'lusin', qty:1, norm:'butir', norm_qty:12, store:'Grosir Indah', base_price:36000, priority:9, quality:6},
-    {id:'telur_b_lzn', name:'Telur Ayam Kampung 1 lusin', category:'telur', unit:'lusin', qty:1, norm:'butir', norm_qty:12, store:'Peternak Sukses', base_price:54000, priority:9, quality:8},
-    // Gula (kg)
-    {id:'gula_a_1', name:'Gula 1kg', category:'gula', unit:'kg', qty:1, norm:'kg', norm_qty:1, store:'Sembako Bu Tini', base_price:17000, priority:8, quality:6},
-    {id:'gula_b_1', name:'Gula Premium 1kg', category:'gula', unit:'kg', qty:1, norm:'kg', norm_qty:1, store:'Grosir Indah', base_price:18500, priority:8, quality:7},
-    // Ayam (kg)
-    {id:'ayam_a_1', name:'Daging Ayam 1kg', category:'ayam', unit:'kg', qty:1, norm:'kg', norm_qty:1, store:'Toko Daging Sehat', base_price:39000, priority:7, quality:6},
-    {id:'ayam_b_1', name:'Daging Ayam Fillet 1kg', category:'ayam', unit:'kg', qty:1, norm:'kg', norm_qty:1, store:'RPH Prima', base_price:46000, priority:7, quality:8},
-    // Sapi (0.25kg)
-    {id:'sapi_a_025', name:'Daging Sapi 0.25kg', category:'sapi', unit:'kg', qty:0.25, norm:'kg', norm_qty:0.25, store:'Toko Daging Sehat', base_price:30000, priority:6, quality:6},
-    {id:'sapi_b_025', name:'Daging Sapi Premium 0.25kg', category:'sapi', unit:'kg', qty:0.25, norm:'kg', norm_qty:0.25, store:'RPH Prima', base_price:36000, priority:6, quality:8},
-  ];
-  init();
-});
-
-/*********************** STATE ************************/ 
 const state = {
   budget: 300000,
   lokasi: LOKASI[0].val,
-  enabled: Object.fromEntries(CATEGORIES.map(c=>[c.id, true])),
-  mode: 'smart',
   targetFill: 95,
-  basket: null,
+  enabled: {},              // catId -> bool
+  qty: {},                  // catId -> number
+  chosenProduct: {},        // catId -> productId
+  poolPct: 0                // diskon pool simulasi
 };
 
-function saveState(){ localStorage.setItem('ramean2', JSON.stringify(state)); }
-function loadState(){ try{ Object.assign(state, JSON.parse(localStorage.getItem('ramean2'))||{});}catch{} }
+function loadState(){
+  try{
+    const saved = JSON.parse(localStorage.getItem('budgee_mvp')||'{}');
+    Object.assign(state, saved);
+  }catch{}
+}
+function saveState(){
+  localStorage.setItem('budgee_mvp', JSON.stringify(state));
+}
 
-/* pool store */
-function loadPool(lok){ const raw = localStorage.getItem('ramean_pool_'+lok); if(!raw) return {...DEFAULT_POOL}; try { return JSON.parse(raw); } catch { return {...DEFAULT_POOL}; } }
-function savePool(lok, pool){ localStorage.setItem('ramean_pool_'+lok, JSON.stringify(pool)); }
+/* ===================== TOAST ===================== */
 
-/*********************** INIT UI ************************/ 
-function el(html){ const t=document.createElement('template'); t.innerHTML=html.trim(); return t.content.firstElementChild }
-function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800) }
+const toastEl = document.getElementById('toast');
+function toast(msg){
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  setTimeout(()=>toastEl.classList.remove('show'),1700);
+}
+
+/* ===================== INIT UI ===================== */
 
 function init(){
   loadState();
-  // lokasi
-  const selLok = document.getElementById('lokasi');
-  LOKASI.forEach(l=> selLok.appendChild(el(`<option value="${l.val}">${l.val}</option>`)) );
-  selLok.value = state.lokasi; updateJadwal();
-  selLok.addEventListener('change', e=>{ state.lokasi=e.target.value; updateJadwal(); saveState(); renderPool(); renderPackages([state.basket||{items:{},total:0}], state.budget, state.lokasi); })
 
-  // budget & target
-  const budget = document.getElementById('budget');
-  budget.value = state.budget; budget.addEventListener('input', e=>{ state.budget=Number(e.target.value||0); updateFill(); saveState(); })
-  const tfill = document.getElementById('targetFill');
-  tfill.value = state.targetFill; tfill.addEventListener('input', e=>{ state.targetFill=Number(e.target.value); document.getElementById('targetFillLbl').textContent=state.targetFill+'%'; saveState(); })
-  document.getElementById('targetFillLbl').textContent=state.targetFill+'%';
+  // lokasi select
+  const selLok = document.getElementById('lokasi');
+  LOKASI.forEach(l=>{
+    const opt=document.createElement('option');
+    opt.value=l.val; opt.textContent=l.val;
+    selLok.appendChild(opt);
+  });
+  selLok.value = state.lokasi;
+  selLok.addEventListener('change', e=>{
+    state.lokasi = e.target.value;
+    saveState();
+    updateJadwal();
+  });
+  updateJadwal();
+
+  // budget
+  const budgetInput=document.getElementById('budget');
+  budgetInput.value = state.budget;
+  budgetInput.addEventListener('input', e=>{
+    state.budget = Number(e.target.value||0);
+    saveState();
+    renderSummary();
+  });
+
+  // targetFill
+  const tf=document.getElementById('targetFill');
+  tf.value = state.targetFill;
+  document.getElementById('targetFillLbl').textContent = state.targetFill+'%';
+  tf.addEventListener('input', e=>{
+    state.targetFill = Number(e.target.value);
+    document.getElementById('targetFillLbl').textContent = state.targetFill+'%';
+    saveState();
+  });
 
   // kategori chips
-  const chips = document.getElementById('katChips'); chips.innerHTML='';
-  CATEGORIES.forEach(c=>{
-    const node = el(`<label class="chip"><input type="checkbox" ${state.enabled[c.id]?'checked':''} data-id="${c.id}" /> ${c.label}</label>`);
-    node.querySelector('input').addEventListener('change',e=>{ state.enabled[c.id]=e.target.checked; saveState(); })
-    chips.appendChild(node);
-  })
+  const chips = document.getElementById('katChips');
+  chips.innerHTML='';
+  CATEGORIES.forEach(cat=>{
+    if(typeof state.enabled[cat.id]==='undefined') state.enabled[cat.id]=false;
+    const label=document.createElement('label');
+    label.className='chip';
+    label.innerHTML=`<input type="checkbox" data-cat="${cat.id}"> ${cat.label}`;
+    const cb=label.querySelector('input');
+    cb.checked = !!state.enabled[cat.id];
+    cb.addEventListener('change', e=>{
+      const checked = e.target.checked;
+      state.enabled[cat.id] = checked;
+      if(checked){
+        state.qty[cat.id] = state.qty[cat.id] || 1;
+        const def=pickDefaultProduct(cat.id);
+        if(def) state.chosenProduct[cat.id]=def.id;
+      }else{
+        delete state.qty[cat.id];
+        delete state.chosenProduct[cat.id];
+      }
+      saveState();
+      renderTable();
+    });
+    chips.appendChild(label);
+  });
 
-  // mode
-  const mode = document.getElementById('mode'); mode.value = state.mode; mode.addEventListener('change', e=>{ state.mode=e.target.value; saveState(); })
+  // buttons
+  document.getElementById('btnSuggest').addEventListener('click', recommendBalanced);
+  document.getElementById('btnWhatsApp').addEventListener('click', sendWhatsApp);
+  document.getElementById('stickyWA').addEventListener('click', sendWhatsApp);
 
-  // actions
-  document.getElementById('btnRekomendasi').addEventListener('click', recommend)
-  document.getElementById('btnWhatsApp').addEventListener('click', sendWhatsApp)
-  document.getElementById('stickyWA').addEventListener('click', sendWhatsApp)
-
-  renderPool();
-  recommend();
+  renderTable();
 }
 
-function updateJadwal(){ const l = LOKASI.find(x=>x.val===state.lokasi); document.getElementById('jadwalHint').textContent = l? l.info : '—'; }
-
-/*********************** POOL HELPERS ************************/
-function currentTier(pool){ let best = {at:0, extraPct:0}; for(const t of pool.tiers){ if(pool.joined >= t.at && t.extraPct > best.extraPct) best = t; } return best; }
-function nextTier(pool){ const higher = pool.tiers.filter(t=> t.at > pool.joined).sort((a,b)=> a.at-b.at)[0]; return higher || null; }
-function poolDiscountPct(lokasi){ const pool = loadPool(lokasi); return currentTier(pool).extraPct || 0; }
-function discountedTotal(total, lokasi){ const pct = poolDiscountPct(lokasi); return Math.max(0, Math.round(total * (1 - pct/100))); }
-
-/*********************** UTIL ************************/
-function pricePerUnit(p){ if(p.norm && typeof p.norm_qty==='number' && p.norm_qty>0){ return p.base_price / p.norm_qty; } return p.base_price; }
-function fmt(n){ return (n||0).toLocaleString('id-ID'); }
-function find(id){ return PRODUCTS.find(p=>p.id===id); }
-
-/*********************** SUPPLIER PICK ************************/
-function pickSupplierForCategory(cat, items){
-  const byStore = {};
-  items.filter(p=>p.category===cat).forEach(p=>{ (byStore[p.store] ||= []).push(p); });
-  const stores = Object.keys(byStore);
-  const unitCost = s => byStore[s].reduce((acc,p)=> acc + pricePerUnit(p), 0) / byStore[s].length;
-  const quality = s => byStore[s].reduce((acc,p)=> acc + (p.quality||6), 0) / byStore[s].length;
-
-  if(state.mode==='basic')   return stores.sort((a,b)=> unitCost(a)-unitCost(b))[0];
-  if(state.mode==='premium') return stores.sort((a,b)=> (quality(b)-quality(a)) || (unitCost(a)-unitCost(b)))[0];
-  return stores.sort((a,b)=> (quality(b)/unitCost(b)) - (quality(a)/unitCost(a)) )[0]; // smart
+function updateJadwal(){
+  const loc=LOKASI.find(l=>l.val===state.lokasi);
+  document.getElementById('jadwalHint').textContent = loc?loc.info:'—';
 }
 
-/*********************** REKOMENDASI ************************/ 
-const DEFAULT_WEIGHTS = { mie:0.9, beras:1.0, telur:1.0, gula:0.9, ayam:1.2, sapi:1.3 };
+/* ===================== SUPPLIER PICKING ===================== */
 
-function recommend(){
+function productsByCategory(catId){
+  return PRODUCTS.filter(p=>p.cat===catId);
+}
+
+function pickBestSupplier(catId){
+  const list = PRODUCTS.filter(p=>p.cat===catId);
+  if(!list.length) return null;
+
+  const perStore={};
+  list.forEach(p=>{
+    if(!perStore[p.store]) perStore[p.store]=[];
+    perStore[p.store].push(p);
+  });
+
+  function score(store){
+    const items = perStore[store];
+    const avgPrice = items.reduce((s,p)=>s+p.price,0)/items.length;
+    const avgQuality = items.reduce((s,p)=>s+(p.quality||6),0)/items.length;
+    return avgQuality/avgPrice;
+  }
+
+  return Object.keys(perStore).sort((a,b)=>score(b)-score(a))[0];
+}
+
+function pickBestSKU(catId){
+  const bestStore = pickBestSupplier(catId);
+  if(!bestStore) return null;
+  const list = PRODUCTS.filter(p=>p.cat===catId && p.store===bestStore);
+  return list.sort((a,b)=>(b.quality/b.price)-(a.quality/a.price))[0];
+}
+
+function pickDefaultProduct(catId){
+  return pickBestSKU(catId);
+}
+
+/* ===================== BALANCED RECOMMENDATION ===================== */
+
+function recommendBalanced(){
   const enabledCats = CATEGORIES.filter(c=>state.enabled[c.id]).map(c=>c.id);
-  const poolItems = PRODUCTS.filter(p=> enabledCats.includes(p.category));
-
-  // 1 supplier per kategori
-  const chosenSupplier = {};
-  for(const cat of enabledCats){ chosenSupplier[cat] = pickSupplierForCategory(cat, poolItems); }
-  const candidates = poolItems.filter(p=> p.store === chosenSupplier[p.category]);
-
-  const budget = Number(state.budget||0);
-  const target = Math.floor(budget * (state.targetFill/100)); // slider apply all modes
-
-  const essentials = ['beras','gula','telur'];
-  const weights = {...DEFAULT_WEIGHTS};
-  if(state.mode==='basic'){ essentials.forEach(c=> weights[c] += 0.2); }
-  if(state.mode==='premium'){ weights.ayam += 0.4; weights.sapi += 0.6; }
-
-  const skuByCat = {};
-  for(const cat of enabledCats){
-    const list = candidates.filter(p=> p.category===cat);
-    skuByCat[cat] = list.sort((a,b)=> pricePerUnit(a)-pricePerUnit(b))[0]; // SKU representatif
+  if(!enabledCats.length){
+    toast('Pilih minimal satu kategori.');
+    return;
   }
 
-  const picked = {}; let total = 0;
-  if(state.mode!=='basic'){
-    for(const cat of enabledCats){ const sku = skuByCat[cat]; if(sku && total + sku.base_price <= target){ picked[sku.id] = 1; total += sku.base_price; } }
-  } else {
-    for(const cat of essentials){ if(!enabledCats.includes(cat)) continue; const sku = skuByCat[cat]; if(sku && total + sku.base_price <= target){ picked[sku.id] = 1; total += sku.base_price; } }
+  const budgetTarget = state.budget * (state.targetFill/100);
+
+  const skus={};
+  enabledCats.forEach(cat=>{
+    skus[cat]=pickBestSKU(cat);
+    if(skus[cat]){
+      state.qty[cat]=1;
+      state.chosenProduct[cat]=skus[cat].id;
+    }
+  });
+
+  function currentTotal(){
+    let t=0;
+    enabledCats.forEach(cat=>{
+      const p=skus[cat];
+      const q=state.qty[cat]||0;
+      if(p && q>0) t += p.price*q;
+    });
+    return t;
   }
 
-  function tryAdd(cat){ const sku = skuByCat[cat]; if(!sku) return false; if(total + sku.base_price <= target){ picked[sku.id] = (picked[sku.id]||0)+1; total += sku.base_price; return true;} return false; }
+  let total=currentTotal();
 
-  const q = enabledCats.slice().sort((a,b)=> (weights[b]/pricePerUnit(skuByCat[b]||{base_price:1,norm_qty:1})) - (weights[a]/pricePerUnit(skuByCat[a]||{base_price:1,norm_qty:1})) );
-  let idx=0; let guard=0;
-  while(total < target && guard < 10000){
-    const cat = q[idx % q.length]; tryAdd(cat); idx++; guard++;
-    if(q.every(c=> !skuByCat[c] || total + (skuByCat[c]?.base_price||1) > target)) break;
+  const ordered=enabledCats.slice().sort((a,b)=>{
+    const pa=skus[a], pb=skus[b];
+    const sa=(WEIGHTS[a]||1)/(pa?pa.price:1);
+    const sb=(WEIGHTS[b]||1)/(pb?pb.price:1);
+    return sb-sa;
+  });
+
+  let i=0, guard=0;
+  while(total<budgetTarget && guard<5000){
+    const cat=ordered[i%ordered.length];
+    const p=skus[cat];
+    if(!p) break;
+    if(total+p.price>budgetTarget) break;
+    state.qty[cat]=(state.qty[cat]||0)+1;
+    total+=p.price;
+    i++; guard++;
   }
 
-  state.basket = { name: modeName(state.mode), items:picked, total, suppliers:chosenSupplier };
+  // random diskon pool 0–15% (simulasi)
+  state.poolPct = Math.floor(Math.random()*(POOL_MAX-POOL_MIN+1))+POOL_MIN;
+
   saveState();
-  renderPackages([state.basket], budget, state.lokasi);
-  updateFill();
+  renderTable();
+  toast('Paket berhasil dibuat berdasarkan harga & kualitas supplier.');
 }
 
-function modeName(m){ return m==='basic'? 'Basic Hemat' : m==='smart'? 'Bulanan Cerdas' : 'Premium Smart'; }
+/* ===================== RENDER TABLE ===================== */
 
-/*********************** RENDER ************************/ 
-function renderPackages(packages, budget, lokasi){
-  const panel = document.getElementById('panelPaket');
-  const pool = loadPool(lokasi);
-  const curPct = currentTier(pool).extraPct || 0;
+function renderTable(){
+  const panel=document.getElementById('panelPaket');
+  const enabledCats=CATEGORIES.filter(c=>state.enabled[c.id]);
 
-  panel.innerHTML = packages.map(pkg=>{
-    const rows = Object.entries(pkg.items).map(([pid,qty])=>{
-      const p=find(pid); const sub = p.base_price*qty;
-      return `<tr>
-        <td>${p.name}<div class="mini muted">${p.store} • ${p.category} • ${p.qty}${p.unit}</div></td>
+  if(!enabledCats.length){
+    panel.innerHTML='<div class="mini muted">Centang kategori untuk mulai.</div>';
+    renderSummary();
+    return;
+  }
+
+  let html=`
+    <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>Kategori</th>
+            <th>Supplier</th>
+            <th>Qty</th>
+            <th>Harga / unit</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  enabledCats.forEach(cat=>{
+    const list=productsByCategory(cat.id);
+    const def=pickDefaultProduct(cat.id);
+    let selectedId=state.chosenProduct[cat.id] || (def && def.id);
+    if(!selectedId && list.length) selectedId=list[0].id;
+    state.chosenProduct[cat.id]=selectedId;
+
+    const prod=findProduct(selectedId);
+    const qty=state.qty[cat.id]||1;
+    const subtotal=prod?prod.price*qty:0;
+
+    const options=list.map(p=>{
+      const isRec = def && def.id===p.id;
+      const label=`${p.name} — Rp${fmt(p.price)} (${p.store}${isRec?' • disarankan':''})`;
+      return `<option value="${p.id}" ${p.id===selectedId?'selected':''}>${label}</option>`;
+    }).join('');
+
+    html+=`
+      <tr data-cat="${cat.id}">
+        <td>${cat.label}</td>
         <td>
-          <div class="qty" data-id="${p.id}">
-            <button aria-label="kurangi">−</button>
-            <input value="${qty}" inputmode="numeric" />
-            <button aria-label="tambah">＋</button>
+          <select class="prod-select">
+            ${options}
+          </select>
+        </td>
+        <td>
+          <div class="qty">
+            <button type="button" class="btn-minus">−</button>
+            <input type="number" class="qty-input" min="1" value="${qty}">
+            <button type="button" class="btn-plus">+</button>
           </div>
         </td>
-        <td>Rp${fmt(p.base_price)}</td>
-        <td>Rp${fmt(sub)}</td>
-      </tr>`
-    }).join('') || `<tr><td colspan="4" class="muted">Budget terlalu kecil untuk kategori terpilih.</td></tr>`;
+        <td>Rp${fmt(prod.price)}</td>
+        <td>Rp${fmt(subtotal)}</td>
+      </tr>
+    `;
+  });
 
-    const market = Math.round(pkg.total*MARKET_MARKUP);
-    const diskonPool = Math.round(pkg.total * (curPct/100));
-    const totalBayar = discountedTotal(pkg.total, lokasi);
-    const hematVsMarket = Math.max(0, market - totalBayar);
-    const hematPctApprox = market? Math.round(hematVsMarket/market*100) : 0;
+  html+=`
+        </tbody>
+      </table>
+    </div>
+    <div id="cartSummary" style="margin-top:10px"></div>
+  `;
 
-    return `<div class="card" style="padding:12px">
-      <h3 style="margin:6px 0">${pkg.name}</h3>
-      <div class="muted mini" style="margin-bottom:8px">Lokasi ${lokasi} • Pengiriman gabungan sesuai jadwal</div>
-      <div style="overflow:auto">
-        <table>
-          <thead><tr><th>Item</th><th>Qty</th><th>Harga</th><th>Subtotal</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
+  panel.innerHTML=html;
 
-      
-      <div class="foot">
+  // attach listeners
+  enabledCats.forEach(cat=>{
+    const row=panel.querySelector(`tr[data-cat="${cat.id}"]`);
+    if(!row) return;
+    const sel=row.querySelector('.prod-select');
+    const minus=row.querySelector('.btn-minus');
+    const plus=row.querySelector('.btn-plus');
+    const input=row.querySelector('.qty-input');
+
+    sel.addEventListener('change', e=>{
+      state.chosenProduct[cat.id]=e.target.value;
+      saveState();
+      renderTable();
+    });
+    minus.addEventListener('click', ()=>{
+      const val=Math.max(1, (Number(input.value)||1)-1);
+      input.value=val;
+      state.qty[cat.id]=val;
+      saveState();
+      renderTable();
+    });
+    plus.addEventListener('click', ()=>{
+      const val=(Number(input.value)||1)+1;
+      input.value=val;
+      state.qty[cat.id]=val;
+      saveState();
+      renderTable();
+    });
+    input.addEventListener('change', e=>{
+      const v=Math.max(1, Number(e.target.value)||1);
+      state.qty[cat.id]=v;
+      saveState();
+      renderTable();
+    });
+  });
+
+  saveState();
+  renderSummary();
+}
+
+/* ===================== SUMMARY (POOL DISCOUNT + PASAR) ===================== */
+
+function renderSummary(){
+  const sticky = document.getElementById('stickyBar');
+  const budget = state.budget || 0;
+
+  // Hitung total keranjang
+  let rawTotal = 0;
+  Object.keys(state.qty).forEach(catId=>{
+    const prod = findProduct(state.chosenProduct[catId]);
+    const q = state.qty[catId] || 0;
+    if (prod && q > 0) rawTotal += prod.price * q;
+  });
+
+  // Diskon pool
+  const poolPct = state.poolPct || 0;
+  const poolDiscount = Math.round(rawTotal * (poolPct / 100));
+  const totalBayar = Math.max(0, rawTotal - poolDiscount);
+
+  // Banding pasar (simulasi minimarket)
+  const market = Math.round(totalBayar * MARKET_MARKUP);
+  const hematVsPasar = Math.max(0, market - totalBayar);
+  const hematPctApprox = market > 0 ? Math.round(hematVsPasar / market * 100) : 0;
+
+  // Budget bar UI
+  const usedPct = budget > 0 ? Math.round((totalBayar / budget) * 100) : 0;
+  document.getElementById('fillBar').style.width =
+    Math.max(0, Math.min(100, usedPct)) + '%';
+  document.getElementById('fillHint').textContent =
+    `${Math.max(0, usedPct)}% dari budget terpakai`;
+
+  // ================================
+  //  CARD SUMMARY (lengkap)
+  // ================================
+  const summaryEl = document.getElementById('cartSummary');
+  if (summaryEl) {
+    if (rawTotal <= 0) {
+      summaryEl.innerHTML = `<div class="mini muted">Belum ada item di keranjang.</div>`;
+    } else {
+      summaryEl.innerHTML = `
         <div>
-          <div><span class="strike">Total sebelum diskon: Rp${fmt(pkg.total)}</span></div>
-          <div>Diskon Pool (${curPct}%): <b>− Rp${fmt(diskonPool)}</b></div>
-          <div style="margin-top:4px"><strong>Total Bayar: Rp${fmt(totalBayar)}</strong></div>
+          <div><span class="strike">Total sebelum diskon: Rp${fmt(rawTotal)}</span></div>
+          <div>Diskon pool (${poolPct}%): <b>− Rp${fmt(poolDiscount)}</b></div>
+          <div style="margin-top:4px"><strong>Total bayar: Rp${fmt(totalBayar)}</strong></div>
           <div class="mini muted" style="margin-top:6px">
-            Banding pasar: Rp${fmt(market)} • Hemat vs pasar: Rp${fmt(hematVsMarket)} (~${hematPctApprox}%)
+            Banding pasar: Rp${fmt(market)} • Hemat vs pasar: Rp${fmt(hematVsPasar)} (~${hematPctApprox}%)
           </div>
         </div>
-      </div>
+      `;
+    }
+  }
 
-    </div>`
-  }).join('');
+  // ================================
+  //  STICKY SUMMARY (simpel)
+  // ================================
+  document.getElementById('stickyTotal').textContent =
+    'Rp' + fmt(totalBayar);
 
-  // qty steppers
-  panel.querySelectorAll('.qty').forEach(q=>{
-    const id=q.dataset.id; const input=q.querySelector('input');
-    q.querySelectorAll('button')[0].addEventListener('click',()=>{ setQty(id, Math.max(0, (Number(input.value)||0)-1)) })
-    q.querySelectorAll('button')[1].addEventListener('click',()=>{ setQty(id, (Number(input.value)||0)+1) })
-    input.addEventListener('change',()=>{ const v=Math.max(0, Number(input.value)||0); setQty(id,v) })
-  })
-  // WA in card
-  //panel.querySelectorAll('[data-wa]').forEach(b=> b.addEventListener('click', sendWhatsApp))
+  // hanya hemat total — simple seperti UI contoh
+  document.getElementById('stickySave').textContent =
+    `Hemat ~Rp${fmt(hematVsPasar)}`;
 
-  // update sticky
-  updateSticky();
+  // sembunyikan info budget
+  document.getElementById('stickyBudget').style.display = 'none';
+
+  sticky.hidden = rawTotal <= 0;
 }
 
-function setQty(id, qty){
-  if(!state.basket) return;
-  if(qty<=0){ delete state.basket.items[id] } else { state.basket.items[id]=qty }
-  state.basket.total = Object.entries(state.basket.items).reduce((sum,[pid,q])=> sum + (find(pid)?.base_price||0)*q, 0)
-  saveState();
-  renderPackages([state.basket], state.budget, state.lokasi);
-  updateFill();
-}
 
-function updateFill(){
-  const used = Math.min(1, (state?.basket?.total||0) / Math.max(1,state.budget));
-  const bar = document.getElementById('fillBar'); bar.style.width = (used*100)+'%';
-  document.getElementById('fillHint').textContent = `${Math.round(used*100)}% dari budget terpakai`;
-}
+/* ===================== WHATSAPP ===================== */
 
-/*********************** POOL RENDER ************************/
-function renderPool(){
-  const banner = document.getElementById('poolBanner');
-  const pool = loadPool(state.lokasi);
-  const pct = Math.min(100, Math.round(pool.joined / pool.target * 100));
-  const cur = currentTier(pool);
-  const nxt = nextTier(pool);
+function buildSummaryText(){
+  const loc=LOKASI.find(l=>l.val===state.lokasi);
+  let lines=[];
+  lines.push('[Budgee Order]');
+  lines.push(`Lokasi: ${state.lokasi} (${loc?loc.info:''})`);
+  lines.push('');
 
-  const bar = `
-    <div class="bar" style="margin:6px 0 2px"><i style="width:${pct}%"></i></div>
-    <div class="mini muted">${pool.joined}/${pool.target} orang gabung • ${pct}% tercapai</div>
-  `;
+  let rawTotal=0;
+  Object.keys(state.qty).forEach(catId=>{
+    const prod=findProduct(state.chosenProduct[catId]);
+    const q=state.qty[catId]||0;
+    if(prod && q>0){
+      const sub=prod.price*q;
+      rawTotal+=sub;
+      lines.push(`- ${prod.name} x${q} @Rp${fmt(prod.price)} = Rp${fmt(sub)}`);
+    }
+  });
 
-  const basketTotal = state?.basket?.total || 0;
-  const nextSaveMoney = (nxt && basketTotal>0) ? Math.round(basketTotal * (nxt.extraPct/100)) : 0;
+  const poolPct=state.poolPct||0;
+  const poolDiscount = Math.round(rawTotal * (poolPct/100));
+  const totalBayar = Math.max(0, rawTotal - poolDiscount);
+  const market = Math.round(rawTotal * MARKET_MARKUP);
+  const hematVsPasar = Math.max(0, market - totalBayar);
 
-  const tierInfo = nxt
-    ? `Butuh <b>${nxt.at - pool.joined}</b> lagi → hemat tambahan <b>+${nxt.extraPct}%</b> ≈ Rp${(nextSaveMoney).toLocaleString('id-ID')}`
-    : `Tier maksimum tercapai 🎉 Hemat tambahan <b>+${cur.extraPct}%</b>`;
+  lines.push('');
+  lines.push(`Total sebelum diskon: Rp${fmt(rawTotal)}`);
+  lines.push(`Diskon pool (simulasi ${poolPct}%): Rp${fmt(poolDiscount)}`);
+  lines.push(`Total bayar: Rp${fmt(totalBayar)}`);
+  lines.push(`Perkiraan harga pasar: Rp${fmt(market)}`);
+  lines.push(`Perkiraan hemat vs pasar: Rp${fmt(hematVsPasar)}`);
+  lines.push('');
+  lines.push('Nama:');
+  lines.push('Nomor WA:');
+  lines.push('Catatan tambahan:');
 
-  banner.innerHTML = `
-    <div class="pool">
-      <div>
-        <div><span class="badge">Pool Lokasi Aktif</span> <b>${state.lokasi}</b></div>
-        ${bar}
-      </div>
-      <div class="stack">
-        <button class="btn" id="poolPlus">+1 Gabung</button>
-        <button class="btn ghost" id="btnInvite">Ajak Teman</button>
-      </div>
-    </div>
-    <div class="mini" style="margin-top:6px">${tierInfo}</div>
-  `;
-
-  document.getElementById('poolPlus').onclick = ()=>{ pool.joined = Math.min(pool.target, pool.joined+1); savePool(state.lokasi, pool); renderPool(); renderPackages([state.basket||{items:{},total:0}], state.budget, state.lokasi); };
-  document.getElementById('btnInvite').onclick = ()=>{ shareLink(); toast('Link dibagikan — ajak tetangga biar makin murah!') };
-}
-
-/*********************** WA & SHARE ************************/ 
-function buildSummary(){
-  const pkg = state.basket || {items:{}, total:0};
-  const poolPct = poolDiscountPct(state.lokasi);
-  const totalBayar = discountedTotal(pkg.total, state.lokasi);
-  const rows = Object.entries(pkg.items).map(([pid,qty])=>{ const p=find(pid); return `- ${p.name} x${qty} @Rp${fmt(p.base_price)} (${p.qty}${p.unit})` }).join('\n');
-  const market = Math.round(pkg.total*MARKET_MARKUP);
-  const hematReal = Math.max(0, market - totalBayar);
-  const l=LOKASI.find(x=>x.val===state.lokasi);
-  return `[Ramean Order]
-Lokasi: ${state.lokasi} (${l?.info||''})
-Total sebelum diskon: Rp${fmt(pkg.total)}
-Diskon Pool (${poolPct}%): Rp${fmt(Math.round(pkg.total*poolPct/100))}
-Total Bayar: Rp${fmt(totalBayar)}
-Perkiraan hemat vs pasar: Rp${fmt(hematReal)}
-
-Item:
-${rows}
-
-Nama:
-Nomor:
-Alamat:
-Catatan Waktu Kirim:`;
+  return lines.join('\n');
 }
 
 function sendWhatsApp(){
-  const text = encodeURIComponent(buildSummary());
-  const url = `https://wa.me/${PHONE}?text=${text}`;
+  const text=encodeURIComponent(buildSummaryText());
+  const url=`https://wa.me/${PHONE}?text=${text}`;
   window.open(url,'_blank','noopener');
 }
 
-function shareLink(){
-  const params = new URLSearchParams();
-  params.set('b', state.budget);
-  params.set('l', state.lokasi);
-  params.set('m', state.mode);
-  params.set('t', state.targetFill);
-  params.set('en', Object.entries(state.enabled).filter(([,v])=>v).map(([k])=>k).join('.'));
-  const url = location.origin + location.pathname + '?' + params.toString();
-  navigator.clipboard.writeText(url).then(()=> toast('Link preferensi tersalin')); 
-}
-
-/*********************** STICKY BAR ************************/ 
-function updateSticky(){
-  const bar = document.getElementById('stickyBar');
-  const pkg = state.basket || {total:0};
-  const totalBayar = discountedTotal(pkg.total, state.lokasi);
-  const market = Math.round(pkg.total*MARKET_MARKUP);
-  const hemat = Math.max(0, market - totalBayar);
-  document.getElementById('stickyTotal').textContent = 'Rp'+fmt(totalBayar);
-  document.getElementById('stickySave').textContent = 'Hemat ~Rp'+fmt(hemat);
-  bar.hidden = pkg.total<=0;
-}
+/* ===================== START ===================== */
+init();
 </script>
+
 </body>
 </html>
