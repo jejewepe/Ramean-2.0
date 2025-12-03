@@ -422,7 +422,7 @@ function recommendBalanced(){
   }
 
   let total=currentTotal();
-
+  let totalAfterDics = totalAfterPool(total)
   const ordered=enabledCats.slice().sort((a,b)=>{
     const pa=skus[a], pb=skus[b];
     const sa=(WEIGHTS[a]||1)/(pa?pa.price:1);
@@ -431,11 +431,16 @@ function recommendBalanced(){
   });
 
   let i=0, guard=0;
-  while(total<budgetTarget && guard<5000){
+  while(totalAfterDics<budgetTarget && guard<5000){
     const cat=ordered[i%ordered.length];
     const p=skus[cat];
-    if(!p) break;
-    if(total+p.price>budgetTarget) break;
+    if (!p) { i++; guard++; continue; }
+    const nextRaw = total + p.price;
+const nextAfterDisc = totalAfterPool(nextRaw);
+
+if (nextAfterDisc > budgetTarget) break;
+
+    
     state.qty[cat]=(state.qty[cat]||0)+1;
     total+=p.price;
     i++; guard++;
@@ -564,6 +569,10 @@ function renderTable(){
 }
 
 /* ===================== SUMMARY (POOL DISCOUNT + PASAR) ===================== */
+function totalAfterPool(rawTotal){
+  const poolPct = state.poolPct || 0;
+  return Math.max(0, rawTotal - Math.round(rawTotal * (poolPct/100)));
+}
 
 function renderSummary(){
   const sticky = document.getElementById('stickyBar');
